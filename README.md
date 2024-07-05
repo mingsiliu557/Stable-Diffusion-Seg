@@ -114,7 +114,7 @@ bash scripts/download_models_lsun_churches.sh
 Take CVC dataset as an example, run
 
 ```bash
-nohup python -u main.py --base configs/latent-diffusion/cvc-ldm-kl-8.yaml -t --gpus 0, --name experiment_name > nohup/experiment_name.log 2>&1 &
+nohup python -u main.py --base configs/latent-diffusion/refuge2-ldm-kl-8-concat-mode.yaml -t --gpus 3, --name experiment_name > nohup/refuge_training.log 2>&1 &
 ```
 
 You can check the training log by 
