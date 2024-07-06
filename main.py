@@ -325,121 +325,124 @@ class ImageLogger(Callback):
 
     @rank_zero_only
     def _testtube(self, pl_module, images, batch_idx, split):
-        for k in images:
-            grid = torchvision.utils.make_grid(images[k])
-            grid = (grid + 1.0) / 2.0  # -1,1 -> 0,1; c,h,w
+        pass
+        # for k in images:
+        #     grid = torchvision.utils.make_grid(images[k])
+        #     grid = (grid + 1.0) / 2.0  # -1,1 -> 0,1; c,h,w
 
-            tag = f"{split}/{k}"
-            pl_module.logger.experiment.add_image(
-                tag, grid,
-                global_step=pl_module.global_step)
+        #     tag = f"{split}/{k}"
+        #     pl_module.logger.experiment.add_image(
+        #         tag, grid,
+        #         global_step=pl_module.global_step)
 
     @rank_zero_only
     def log_local(self, save_dir, split, images,
                   global_step, current_epoch, batch_idx):
-        root = os.path.join(save_dir, "images", split)
-        for k in images:
-            grid = torchvision.utils.make_grid(images[k], nrow=4)
-            if self.rescale:
-                grid = (grid + 1.0) / 2.0  # -1,1 -> 0,1; c,h,w
-            grid = grid.transpose(0, 1).transpose(1, 2).squeeze(-1)
-            grid = grid.numpy()
-            grid = (grid * 255).astype(np.uint8)
-            filename = "{}_gs-{:06}_e-{:06}_b-{:06}.png".format(
-                k,
-                global_step,
-                current_epoch,
-                batch_idx)
-            path = os.path.join(root, filename)
-            os.makedirs(os.path.split(path)[0], exist_ok=True)
-            Image.fromarray(grid).save(path)
+        pass
+        # root = os.path.join(save_dir, "images", split)
+        # for k in images:
+        #     grid = torchvision.utils.make_grid(images[k], nrow=4)
+        #     if self.rescale:
+        #         grid = (grid + 1.0) / 2.0  # -1,1 -> 0,1; c,h,w
+        #     grid = grid.transpose(0, 1).transpose(1, 2).squeeze(-1)
+        #     grid = grid.numpy()
+        #     grid = (grid * 255).astype(np.uint8)
+        #     filename = "{}_gs-{:06}_e-{:06}_b-{:06}.png".format(
+        #         k,
+        #         global_step,
+        #         current_epoch,
+        #         batch_idx)
+        #     path = os.path.join(root, filename)
+        #     os.makedirs(os.path.split(path)[0], exist_ok=True)
+        #     Image.fromarray(grid).save(path)
 
     @rank_zero_only
     def log_img(self, pl_module, batch, batch_idx, split="train"):
-        check_idx = batch_idx if self.log_on_batch_idx else pl_module.global_step
-        if (self.check_frequency(check_idx) and  # batch_idx % self.batch_freq == 0
-                hasattr(pl_module, "log_images") and
-                callable(pl_module.log_images) and
-                self.max_images > 0):
-            logger = type(pl_module.logger)
+        pass
+        # check_idx = batch_idx if self.log_on_batch_idx else pl_module.global_step
+        # if (self.check_frequency(check_idx) and  # batch_idx % self.batch_freq == 0
+        #         hasattr(pl_module, "log_images") and
+        #         callable(pl_module.log_images) and
+        #         self.max_images > 0):
+        #     logger = type(pl_module.logger)
 
-            is_train = pl_module.training
-            if is_train:
-                pl_module.eval()
+        #     is_train = pl_module.training
+        #     if is_train:
+        #         pl_module.eval()
 
-            with torch.no_grad():
-                images = pl_module.log_images(batch, split=split, **self.log_images_kwargs)
+        #     with torch.no_grad():
+        #         images = pl_module.log_images(batch, split=split, **self.log_images_kwargs)
 
-            for k in images:
-                N = min(images[k].shape[0], self.max_images)
-                images[k] = images[k][:N]
-                if isinstance(images[k], torch.Tensor):
-                    images[k] = images[k].detach().cpu()
-                    if self.clamp:
-                        images[k] = torch.clamp(images[k], -1., 1.)
+        #     for k in images:
+        #         N = min(images[k].shape[0], self.max_images)
+        #         images[k] = images[k][:N]
+        #         if isinstance(images[k], torch.Tensor):
+        #             images[k] = images[k].detach().cpu()
+        #             if self.clamp:
+        #                 images[k] = torch.clamp(images[k], -1., 1.)
 
-            self.log_local(pl_module.logger.save_dir, split, images,
-                           pl_module.global_step, pl_module.current_epoch, batch_idx)
+        #     self.log_local(pl_module.logger.save_dir, split, images,
+        #                    pl_module.global_step, pl_module.current_epoch, batch_idx)
 
-            logger_log_images = self.logger_log_images.get(logger, lambda *args, **kwargs: None)
-            logger_log_images(pl_module, images, pl_module.global_step, split)
+        #     logger_log_images = self.logger_log_images.get(logger, lambda *args, **kwargs: None)
+        #     logger_log_images(pl_module, images, pl_module.global_step, split)
 
-            if is_train:
-                pl_module.train()
+        #     if is_train:
+        #         pl_module.train()
 
-        # log dice
-        if (self.log_dice_frequency and
-                check_idx % self.log_dice_frequency == 0 and  # batch_idx % self.batch_freq == 0
-                hasattr(pl_module, "log_dice") and
-                callable(pl_module.log_dice) and
-                self.max_images > 0 and
-                check_idx > 0
-        ):
-            logger = type(pl_module.logger)
+        # # log dice
+        # if (self.log_dice_frequency and
+        #         check_idx % self.log_dice_frequency == 0 and  # batch_idx % self.batch_freq == 0
+        #         hasattr(pl_module, "log_dice") and
+        #         callable(pl_module.log_dice) and
+        #         self.max_images > 0 and
+        #         check_idx > 0
+        # ):
+        #     logger = type(pl_module.logger)
 
-            is_train = pl_module.training
-            if is_train:
-                pl_module.eval()
+        #     is_train = pl_module.training
+        #     if is_train:
+        #         pl_module.eval()
 
-            with torch.no_grad():
-                metrics_dict, seg_label_dict = pl_module.log_dice()
-                dice_list = metrics_dict["val_avg_dice"]
-                # print("[metric list]", metrics_dict["val_avg_dice"], metrics_dict["val_avg_iou"])
-            for k in seg_label_dict:
-                N = min(seg_label_dict[k].shape[0], self.max_images)
-                seg_label_dict[k] = seg_label_dict[k][:N]
-                if isinstance(seg_label_dict[k], torch.Tensor):
-                    seg_label_dict[k] = seg_label_dict[k].detach().cpu()
-                    if self.clamp:
-                        seg_label_dict[k] = torch.clamp(seg_label_dict[k], -1., 1.)
-            logger_log_images = self.logger_log_images.get(logger, lambda *args, **kwargs: None)
-            logger_log_images(pl_module, seg_label_dict, pl_module.global_step, split)
+        #     with torch.no_grad():
+        #         metrics_dict, seg_label_dict = pl_module.log_dice()
+        #         dice_list = metrics_dict["val_avg_dice"]
+        #         # print("[metric list]", metrics_dict["val_avg_dice"], metrics_dict["val_avg_iou"])
+        #     for k in seg_label_dict:
+        #         N = min(seg_label_dict[k].shape[0], self.max_images)
+        #         seg_label_dict[k] = seg_label_dict[k][:N]
+        #         if isinstance(seg_label_dict[k], torch.Tensor):
+        #             seg_label_dict[k] = seg_label_dict[k].detach().cpu()
+        #             if self.clamp:
+        #                 seg_label_dict[k] = torch.clamp(seg_label_dict[k], -1., 1.)
+        #     logger_log_images = self.logger_log_images.get(logger, lambda *args, **kwargs: None)
+        #     logger_log_images(pl_module, seg_label_dict, pl_module.global_step, split)
 
-            for key, value in metrics_dict.items():
-                if key == "val_avg_dice" or key == "val_avg_iou":
-                    # print("[log metric 1]: ", key, value, sum(value), len(value), sum(value) / len(value))
-                    # print(f"\033[31m###### {key}, {check_idx}, {pl_module.global_step}\033[0m")
-                    pl_module.log(key, sum(value) / len(value),
-                                  prog_bar=False, logger=True, on_step=True, on_epoch=False)
-                elif "val_avg_dice" in key or "val_avg_iou" in key:     # isinstance(value, list) and len(value) > 0:
-                    # print("[log metric 2]: ", key, value)
-                    # print(f"\033[31m###### {key}, {check_idx}, {pl_module.global_step}\033[0m")
-                    pl_module.log(key, value,
-                                  prog_bar=False, logger=True, on_step=True, on_epoch=False)
-                else:
-                    continue
+        #     for key, value in metrics_dict.items():
+        #         if key == "val_avg_dice" or key == "val_avg_iou":
+        #             # print("[log metric 1]: ", key, value, sum(value), len(value), sum(value) / len(value))
+        #             # print(f"\033[31m###### {key}, {check_idx}, {pl_module.global_step}\033[0m")
+        #             pl_module.log(key, sum(value) / len(value),
+        #                           prog_bar=False, logger=True, on_step=True, on_epoch=False)
+        #         elif "val_avg_dice" in key or "val_avg_iou" in key:     # isinstance(value, list) and len(value) > 0:
+        #             # print("[log metric 2]: ", key, value)
+        #             # print(f"\033[31m###### {key}, {check_idx}, {pl_module.global_step}\033[0m")
+        #             pl_module.log(key, value,
+        #                           prog_bar=False, logger=True, on_step=True, on_epoch=False)
+        #         else:
+        #             continue
 
-            # os.makedirs(os.path.join(pl_module.logger.save_dir, "dices_hist"), exist_ok=True)
-            # save_dice_hist(
-            #     dice_list,
-            #     os.path.join(pl_module.logger.save_dir, "dices_hist"),
-            #     dict(global_step=pl_module.global_step),
-            # )
-            # pl_module.logger.experiment.add_histogram("val_dice_hist", torch.tensor(dice_list),
-            #                                           global_step=pl_module.global_step)
+        #     # os.makedirs(os.path.join(pl_module.logger.save_dir, "dices_hist"), exist_ok=True)
+        #     # save_dice_hist(
+        #     #     dice_list,
+        #     #     os.path.join(pl_module.logger.save_dir, "dices_hist"),
+        #     #     dict(global_step=pl_module.global_step),
+        #     # )
+        #     # pl_module.logger.experiment.add_histogram("val_dice_hist", torch.tensor(dice_list),
+        #     #                                           global_step=pl_module.global_step)
 
-            if is_train:
-                pl_module.train()
+        #     if is_train:
+        #         pl_module.train()
 
     def check_frequency(self, check_idx):
         if ((check_idx % self.batch_freq) == 0 or (check_idx in self.log_steps)) and (
@@ -453,15 +456,17 @@ class ImageLogger(Callback):
         return False
 
     def on_train_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx):
-        if not self.disabled and (pl_module.global_step > 0 or self.log_first_step):
-            self.log_img(pl_module, batch, batch_idx, split="train")
+        pass
+        # if not self.disabled and (pl_module.global_step > 0 or self.log_first_step):
+        #     self.log_img(pl_module, batch, batch_idx, split="train")
 
     def on_validation_batch_end(self, trainer, pl_module, outputs, batch, batch_idx, dataloader_idx):
-        if not self.disabled and pl_module.global_step > 0:
-            self.log_img(pl_module, batch, batch_idx, split="val")
-        if hasattr(pl_module, 'calibrate_grad_norm'):
-            if (pl_module.calibrate_grad_norm and batch_idx % 25 == 0) and batch_idx > 0:
-                self.log_gradients(trainer, pl_module, batch_idx=batch_idx)
+        pass
+        # if not self.disabled and pl_module.global_step > 0:
+        #     self.log_img(pl_module, batch, batch_idx, split="val")
+        # if hasattr(pl_module, 'calibrate_grad_norm'):
+        #     if (pl_module.calibrate_grad_norm and batch_idx % 25 == 0) and batch_idx > 0:
+        #         self.log_gradients(trainer, pl_module, batch_idx=batch_idx)
 
 
 class CUDACallback(Callback):

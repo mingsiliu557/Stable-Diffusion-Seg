@@ -35,7 +35,7 @@ class REFUGE2Base(Dataset):
     def __getitem__(self, i):
         # read segmentation and images
         example = dict((k, self.labels[k][i]) for k in self.labels)
-        segmentation = Image.open(example["file_path_"].replace("images", "masks")).convert("RGB")
+        segmentation = Image.open(example["file_path_"].replace("image", "mask")).convert("RGB")
         image = Image.open(example["file_path_"]).convert("RGB")    # same name, different postfix
 
         if self.size is not None:
@@ -68,11 +68,12 @@ class REFUGE2Base(Dataset):
         return self._length
 
     def _parse_data_list(self):
-        all_imgs = glob.glob(os.path.join(self.data_root, "*.png"))
-        val_imgs = glob.glob(os.path.join(self.data_root, "V*.png"))
-        test_imgs = glob.glob(os.path.join(self.data_root, "T*.png"))
-        train_imgs = list(set(all_imgs) - set(test_imgs))  # - set(val_imgs)
-        assert len(train_imgs) == 800 and len(test_imgs) == 400
+        #all_imgs = glob.glob(os.path.join(self.data_root, "*.png"))
+        val_imgs = glob.glob(os.path.join(self.data_root, "*.png"))
+        test_imgs = glob.glob(os.path.join(self.data_root, "*.png"))
+        train_imgs = glob.glob(os.path.join(self.data_root, "*.png"))
+        #train_imgs = list(set(all_imgs) - set(test_imgs))  # - set(val_imgs)
+        #assert len(train_imgs) == 800 and len(test_imgs) == 400
 
         if self.mode == "train":
             return train_imgs
@@ -94,14 +95,14 @@ class REFUGE2Base(Dataset):
 
 class REFUGE2Train(REFUGE2Base):
     def __init__(self, **kwargs):
-        super().__init__(data_root="data/refuge2/Train_crop/images", mode="train", **kwargs)
+        super().__init__(data_root="data/refuge2/REFUGE/train/image", mode="train", **kwargs)
 
 
 class REFUGE2Validation(REFUGE2Base):
     def __init__(self, **kwargs):
-        super().__init__(data_root="data/refuge2/Train_crop/images", mode="test", **kwargs)
+        super().__init__(data_root="data/refuge2/REFUGE_Valid/image", mode="test", **kwargs)
 
 
 class REFUGE2Test(REFUGE2Base):
     def __init__(self, **kwargs):
-        super().__init__(data_root="data/refuge2/Train_crop/images", mode="test", **kwargs)
+        super().__init__(data_root="data/refuge2/REFUGE/test/image", mode="test", **kwargs)
