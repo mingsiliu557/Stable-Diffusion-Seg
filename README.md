@@ -134,7 +134,7 @@ Also, tensorboard will be on automatically. You can start a tensorboard session 
 After training an SDSeg model, you should **manually modify the run paths** in `scripts/slice2seg.py`, and begin an inference process like
 
 ```bash
-python -u scripts/slice2seg.py --dataset cvc
+python -u scripts/slice2seg.py --dataset refuge2
 ```
 
 
