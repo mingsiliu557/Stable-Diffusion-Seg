@@ -144,7 +144,7 @@ python -u scripts/slice2seg.py --dataset refuge2
 To conduct an stability evaluation process mentioned in the paper, you can start the test by
 
 ```bash
-python -u scripts/slice2seg.py --dataset cvc --times 10 --save_results
+python -u scripts/slice2seg.py --dataset refuge2 --times 10 --save_results
 ```
 
 This will save 10 times of inference results in `./outputs/` folder. To run the stability evaluation, open `scripts/stability_evaluation.ipynb`, and **modify the path for the segmentation results**. Then, click `Run All` and enjoy.
